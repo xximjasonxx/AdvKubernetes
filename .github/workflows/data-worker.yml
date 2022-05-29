@@ -10,10 +10,6 @@ on:
 
   workflow_dispatch:
 
-defaults:
-  run:
-    working-directory: StockDataWorker/
-
 jobs:
   build:
     name: Publish Docker image
@@ -31,6 +27,6 @@ jobs:
       - name: Build and push
         uses: docker/build-push-action@v2
         with:
-          context: .
+          context: StockDataWorker/
           push: true
           tags: xximjasonxx/data-worker:v1
