@@ -33,4 +33,4 @@ jobs:
         with:
           context: .
           push: true
-          tags: xximjasonxx/data-worker:$GITHUB_RUN_ID
+          tags: xximjasonxx/data-worker:${GITHUB_RUN_NUMBER}
