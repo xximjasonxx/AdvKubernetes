@@ -2,6 +2,7 @@ FROM mcr.microsoft.com/dotnet/sdk:6.0 as builder
 WORKDIR /code
 
 COPY . .
+RUN rm -f appsettings*
 RUN dotnet restore && \
     dotnet publish -c Release -o /output
 

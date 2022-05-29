@@ -4,8 +4,8 @@ using StockDataWorker.Services;
 
 var configuration = new ConfigurationBuilder()
     .SetBasePath(Directory.GetCurrentDirectory())
-    .AddJsonFile("appsettings.json")
-    .AddUserSecrets(Assembly.GetExecutingAssembly(), optional: false)
+    .AddJsonFile("appsettings.json", optional: true)
+    .AddUserSecrets(Assembly.GetExecutingAssembly(), optional: true)
     .AddEnvironmentVariables()
     .Build();
 
