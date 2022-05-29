@@ -29,4 +29,4 @@ jobs:
         with:
           context: StockDataWorker/
           push: true
-          tags: xximjasonxx/data-worker:v1
+          tags: xximjasonxx/data-worker:${{ env.GITHUB_WORKFLOW_RUN_NUMBER }}

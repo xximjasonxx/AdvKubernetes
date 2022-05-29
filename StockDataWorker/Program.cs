@@ -2,25 +2,26 @@ using System.Reflection;
 using StockDataWorker;
 using StockDataWorker.Services;
 
-IHost host = Host.CreateDefaultBuilder(args)
-    .ConfigureAppConfiguration(configuration =>
-    {
-        configuration.SetBasePath(Directory.GetCurrentDirectory())
-            .AddJsonFile("appsettings.json")
-            .AddUserSecrets(Assembly.GetExecutingAssembly(), optional: false)
-            .AddEnvironmentVariables();
-    })
-    .ConfigureServices(services =>
-    {
-        services.AddTransient<SendStockDataService>();
-        services.AddTransient<IStockDataQueryService, PolygonStockDataQueryService>();
-        services.AddTransient<StockDataGenerationService>();
-        services.AddTransient<StockPriceGenerationService>();
-        services.AddTransient<IDataSendService, KafkaDataSendService>();
-
-        services.AddSingleton<IProducerClient, KafkaProducerClient>();
-        services.AddHostedService<TimerApplicationHostedService>();
-    })
+var configuration = new ConfigurationBuilder()
+    .SetBasePath(Directory.GetCurrentDirectory())
+    .AddJsonFile("appsettings.json")
+    .AddUserSecrets(Assembly.GetExecutingAssembly(), optional: false)
+    .AddEnvironmentVariables()
     .Build();
 
-await host.RunAsync();
+var serviceCollection = new ServiceCollection()
+    .AddTransient<SendStockDataService>()
+    .AddTransient<IStockDataQueryService, PolygonStockDataQueryService>()
+    .AddTransient<StockDataGenerationService>()
+    .AddTransient<StockPriceGenerationService>()
+    .AddTransient<IDataSendService, KafkaDataSendService>()
+    .AddSingleton<IProducerClient, KafkaProducerClient>()
+    .AddLogging(configure => configure.AddConsole())
+    .AddSingleton<IConfiguration>(configuration)
+    .AddTransient<Application>();
+
+using (var provider = serviceCollection.BuildServiceProvider())
+{
+    var application = provider.GetRequiredService<Application>();
+    await application.Execute();
+}
