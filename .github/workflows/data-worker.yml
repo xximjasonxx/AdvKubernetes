@@ -10,8 +10,13 @@ on:
 
   workflow_dispatch:
 
+defaults:
+  run:
+    working-directory: StockDataWorker/
+
 jobs:
   build:
+    name: Publish Docker image
     runs-on: ubuntu-latest
 
     steps:
