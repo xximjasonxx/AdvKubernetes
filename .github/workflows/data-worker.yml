@@ -30,3 +30,19 @@ jobs:
           context: StockDataWorker/
           push: true
           tags: xximjasonxx/data-worker:v${{ github.run_number }}
+
+  #deploy:
+  #  name: Deploy Data Worker
+  #  runs-on: ubuntu-latest
+#
+  #  steps:
+  #    - name: 'Deploy'
+  #      uses: 'deliverybot/helm@v1'
+  #      with:
+  #        release: 'data-worker'
+  #        namespace: 'data-worker'
+  #        chart: './data-worker'
+  #        values: |
+  #          image.tag: v${{ github.run_number }}
+  #      env:
+  #        KUBECONFIG_FILE: '${{ secrets.KUBECONFIG }}'

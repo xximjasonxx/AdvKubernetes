@@ -1,0 +1,23 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: data-worker-job
+
+spec:
+  template:
+    spec:
+      containers:
+        - name: job-container
+          image: xximjasonxx/data-worker:{{ .Values.image.tag }}
+          imagePullPolicy: Always
+          env:
+            - name: KafkaHost
+              value: {{ .Values.env.kafkaHost }}
+            - name: ApiBaseUrl
+              value: https://api.polygon.io
+            - name: ApiKey
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.env.apikey.secretName  }}
+                  key: {{ .Values.env.apikey.keyName }}
+      restartPolicy: OnFailure
