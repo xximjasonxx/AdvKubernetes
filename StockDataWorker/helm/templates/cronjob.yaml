@@ -23,4 +23,4 @@ spec:
                       name: {{ .Values.env.apikey.secretName  }}
                       key: {{ .Values.env.apikey.keyName }}
           restartPolicy: OnFailure
-  schedule: "*/5 * * * *"
+  schedule: "*/2 * * * *"
