@@ -1,3 +1,4 @@
+using Microsoft.Azure.Cosmos;
 using Microsoft.Extensions.Hosting;
 using Newtonsoft.Json;
 using StockPriceChangeConsumer.Entities;
@@ -9,13 +10,16 @@ namespace StockPriceChangeConsumer
     public class ApplicationHostedService : IHostedService
     {
         private readonly IConsumerClient _consumerClient;
-        private readonly IStockPriceLookupService _stockPriceLookupService;
+        private readonly IClient _stocksClient;
+        private readonly StockPriceChangeCalculationService _stockPriceChangeCalculationService;
 
         public ApplicationHostedService(IConsumerClient consumerClient,
-            IStockPriceLookupService stockPriceLookupService)
+            IClient stocksClient,
+            StockPriceChangeCalculationService stockPriceChangeCalculationService)
         {
             _consumerClient = consumerClient;
-            _stockPriceLookupService = stockPriceLookupService;
+            _stocksClient = stocksClient;
+            _stockPriceChangeCalculationService = stockPriceChangeCalculationService;
 
             _consumerClient.MessageReceived += OnMessageReceived;
         }
@@ -26,7 +30,7 @@ namespace StockPriceChangeConsumer
             if (priceUpdate == null)
                 throw new Exception("The received message did not serialize into a StockPriceUpdate object.");
 
-            // create our new stock price change object
+            // create the new result
             var newStockPrice = new StockPrice
             {
                 Ticker = priceUpdate.Ticker,
@@ -34,13 +38,18 @@ namespace StockPriceChangeConsumer
                 Time = DateTimeOffset.UtcNow
             };
 
-            var currentStockPrice = await _stockPriceLookupService.GetStockPrice(priceUpdate.Ticker);
-            if (currentStockPrice != null)
+            // read the old stock price
+            var oldStockPrice = await _stocksClient.ReadStockPrice(priceUpdate.Ticker);
+            if (oldStockPrice == null)
             {
-                // prepare to send a percent change event
+                // create the stock price
+                await _stocksClient.CreateStockPrice(newStockPrice);
             }
-
-            // save the new stock price
+            else
+            {
+                // calculate the change
+                Console.WriteLine("Old Stock Price Exists - need to calculate percent change");
+            }
         }
 
         public Task StartAsync(CancellationToken cancellationToken)

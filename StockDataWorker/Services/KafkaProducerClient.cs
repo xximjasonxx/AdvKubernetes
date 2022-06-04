@@ -45,6 +45,8 @@ namespace StockDataWorker.Services
 					topicName,
 					new Message<Null, string> { Value = objectString }
 				);
+
+				Console.WriteLine($"{objectString} sent to {topicName} on Kafka");
 			}
 			catch (Exception ex)
 			{
