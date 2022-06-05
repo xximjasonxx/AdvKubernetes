@@ -52,6 +52,7 @@ namespace StockPriceChangeConsumer
             {
                 // calculate the change
                 var change = _stockPriceChangeCalculationService.GetPercentDifference(oldStockPrice.Price, newStockPrice.Price);
+                Console.WriteLine($"{oldStockPrice.Ticker} changed by {change * 100}%");
 
                 // update the stock price
                 await _stocksClient.UpdateStockPrice(newStockPrice);

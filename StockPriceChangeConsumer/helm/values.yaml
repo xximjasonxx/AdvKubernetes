@@ -1,0 +1,13 @@
+# Default values for data-worker.
+
+image:
+  tag: ""
+
+env:
+  kafkaHost: ""
+  cosmosEndpointUri: ""
+  cosmosDatabaseName: ""
+  cosmosContainerName: ""
+  accessKey:
+    secretName: cosmos-access-key-secret
+    keyName: accessKey

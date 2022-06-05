@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+    name: price-chance-consumer-config
+
+data:
+    kafkaHost: {{ .Values.env.kafkaHost }}
+    cosmosEndpointUri: {{ .Values.env.cosmosEndpointUri }}
+    cosmosDatabaseName: {{ .Values.env.cosmosDatabaseName }}
+    cosmosContainerName: {{ .Values.env.cosmosContainerName }}

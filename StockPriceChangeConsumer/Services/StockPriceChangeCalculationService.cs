@@ -5,7 +5,7 @@ namespace StockPriceChangeConsumer.Services
         public decimal GetPercentDifference(decimal oldPrice, decimal newPrice)
         {
             var result = (newPrice - oldPrice) / oldPrice;
-            return Math.Round(result, 2);
+            return Math.Round(result, 2, MidpointRounding.AwayFromZero);
         }
     }
 }

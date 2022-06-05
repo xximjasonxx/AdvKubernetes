@@ -4,6 +4,9 @@ metadata:
   name: data-worker-cron-job
 
 spec:
+  successfulJobsHistoryLimit: 10
+  failedJobsHistoryLimit: 10
+  schedule: "*/2 * * * *"
   jobTemplate:
     spec:
       template:
@@ -23,4 +26,3 @@ spec:
                       name: {{ .Values.env.apikey.secretName  }}
                       key: {{ .Values.env.apikey.keyName }}
           restartPolicy: OnFailure
-  schedule: "*/2 * * * *"
