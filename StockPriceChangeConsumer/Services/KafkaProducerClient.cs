@@ -1,11 +1,10 @@
-﻿using System;
 using Confluent.Kafka;
+using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
-using StockDataWorker.Models;
 
-namespace StockDataWorker.Services
+namespace StockPriceChangeConsumer.Services
 {
-	public class KafkaProducerClient : IProducerClient
+    public class KafkaProducerClient : IProducerClient
 	{
 		private readonly IConfiguration _configuration;
 
@@ -58,4 +57,3 @@ namespace StockDataWorker.Services
 		Task Send<T>(T sendObject, string topicName) where T : class;
     }
 }
-

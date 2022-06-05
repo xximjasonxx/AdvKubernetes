@@ -17,6 +17,7 @@ var host = Host.CreateDefaultBuilder(args)
     .ConfigureServices((hostContext, services) =>
     {
         services.AddTransient<IConsumerClient, KafkaConsumeClient>();
+        services.AddTransient<IProducerClient, KafkaProducerClient>();
         services.AddTransient<StockPriceChangeCalculationService>();
 
         services.AddSingleton<IClient, CosmosStocksClient>();

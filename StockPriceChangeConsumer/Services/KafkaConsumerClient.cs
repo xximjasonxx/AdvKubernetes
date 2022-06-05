@@ -1,17 +1,24 @@
 
 using Confluent.Kafka;
+using Microsoft.Extensions.Configuration;
 
 namespace StockPriceChangeConsumer.Services
 {
     public class KafkaConsumeClient : IConsumerClient
     {
+        private IConfiguration _configuration;
         public event EventHandler<string> MessageReceived;
+
+        public KafkaConsumeClient(IConfiguration configuration)
+        {
+            _configuration = configuration;
+        }
 
         public void StartConsuming(CancellationToken cancellationToken)
         {
             var config = new ConsumerConfig
             {
-                BootstrapServers = "localhost:9092",
+                BootstrapServers = _configuration.GetValue<string>("KafkaHost"),
                 GroupId = "price-group",
                 AutoOffsetReset = AutoOffsetReset.Earliest
             };

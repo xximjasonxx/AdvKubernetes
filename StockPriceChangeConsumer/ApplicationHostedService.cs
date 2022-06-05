@@ -10,14 +10,17 @@ namespace StockPriceChangeConsumer
     public class ApplicationHostedService : IHostedService
     {
         private readonly IConsumerClient _consumerClient;
+        private readonly IProducerClient _producerClient;
         private readonly IClient _stocksClient;
         private readonly StockPriceChangeCalculationService _stockPriceChangeCalculationService;
 
         public ApplicationHostedService(IConsumerClient consumerClient,
+            IProducerClient producerClient,
             IClient stocksClient,
             StockPriceChangeCalculationService stockPriceChangeCalculationService)
         {
             _consumerClient = consumerClient;
+            _producerClient = producerClient;
             _stocksClient = stocksClient;
             _stockPriceChangeCalculationService = stockPriceChangeCalculationService;
 
@@ -48,8 +51,20 @@ namespace StockPriceChangeConsumer
             else
             {
                 // calculate the change
-                Console.WriteLine("Old Stock Price Exists - need to calculate percent change");
+                var change = _stockPriceChangeCalculationService.GetPercentDifference(oldStockPrice.Price, newStockPrice.Price);
+
+                // update the stock price
+                await _stocksClient.UpdateStockPrice(newStockPrice);
+
+                // send the change event
+                await _producerClient.Send(new StockPriceChange
+                {
+                    Ticker = priceUpdate.Ticker,
+                    PriceChangePercent = change
+                }, "stock-price-change");
             }
+
+            Console.WriteLine($"Successfully processed ticker: {priceUpdate.Ticker}");
         }
 
         public Task StartAsync(CancellationToken cancellationToken)

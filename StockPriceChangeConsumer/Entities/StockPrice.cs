@@ -5,7 +5,7 @@ namespace StockPriceChangeConsumer.Entities
     public class StockPrice : EntityBase
     {
         [JsonProperty(PropertyName = "id")]
-        public override string Id => Ticker;
+        public override string Id=> Ticker;
 
         [JsonProperty(PropertyName = "ticker")]
         public string Ticker { get; set; }

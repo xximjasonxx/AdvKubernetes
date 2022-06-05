@@ -29,6 +29,11 @@ namespace StockPriceChangeConsumer.Services
             await _cosmosContainer.CreateItemAsync(stockPrice, new PartitionKey(stockPrice.Ticker));
         }
 
+        public async Task UpdateStockPrice(StockPrice stockPrice)
+        {
+            await _cosmosContainer.UpsertItemAsync(stockPrice, new PartitionKey(stockPrice.Ticker));
+        }
+
         public async Task<StockPrice?> ReadStockPrice(string ticker)
         {
             try
@@ -51,6 +56,8 @@ namespace StockPriceChangeConsumer.Services
         Task<StockPrice?> ReadStockPrice(string ticker);
 
         Task CreateStockPrice(StockPrice stockPrice);
+
+        Task UpdateStockPrice(StockPrice stockPrice);
     }
 }
 

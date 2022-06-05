@@ -14,13 +14,14 @@ namespace StockDataWorker.Services
 
         public async Task SendStockPriceData(IList<StockPriceUpdate> priceUpdates)
         {
-			var tasks = priceUpdates.Select(x => _producerClient.Send(x, "price-updates"));
-			await Task.WhenAll(tasks);
 
-			var failedTasks = tasks.Where(x => x.Status == TaskStatus.Faulted)
-				.ToList();
+			foreach (var priceUpdate in priceUpdates)
+			{
+				await _producerClient.Send(priceUpdate, "price-updates");
+				Console.WriteLine($"Sent price update for {priceUpdate.Ticker}");
+			}
 
-			Console.WriteLine($"{failedTasks.Count} task(s) failed");
+			Console.WriteLine($"Sent {priceUpdates.Count} price updates");
         }
     }
 

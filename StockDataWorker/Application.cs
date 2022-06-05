@@ -16,16 +16,15 @@ public class Application
 
     public async Task Execute()
     {
-        var task = _sendStockDataSevice.SendStockData();
-        await Task.WhenAll(new [] { task });
-
-        if (task.IsFaulted)
+        try
+        {
+            await _sendStockDataSevice.SendStockData();
+            Console.WriteLine("Success");
+        }
+        catch (Exception ex)
         {
             Console.WriteLine("Data Load failed");
-        }
-        else
-        {
-            Console.WriteLine("Data Load Succeeded");
+            Console.WriteLine(ex.Message);
         }
     }
 }
