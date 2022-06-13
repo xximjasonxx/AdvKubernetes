@@ -1,0 +1,22 @@
+﻿@model StockPickIndexViewModel
+
+@{
+    ViewData["Title"] = "Stock Picks";
+}
+
+<div>
+    <h1 class="display-4">Stock Picks</h1>
+    <hr />
+    @if (Model.StockPicks.Count == 0)
+    {
+        <p style="margin-bottom: 10px">No stock picks have been added yet.</p>
+    }
+    else
+    {
+        @foreach (var stockPick in Model.StockPicks)
+        {
+            <div>@stockPick</div>
+        }
+    }
+    <a href="@Url.Action("Create", "StockPick")">Add a stock pick</a>
+</div>

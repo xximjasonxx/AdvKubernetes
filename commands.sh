@@ -14,3 +14,5 @@ bitnami/kube-prometheus \
 --set prometheus.additionalScrapeConfigs.external.key=kubernetes.yaml
 
 helm install grafana-release grafana/grafana --namespace monitoring
+
+helm install prom-pushgateway-release prometheus-community/prometheus-pushgateway --namespace monitorin

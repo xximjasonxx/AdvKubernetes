@@ -1,0 +1,7 @@
+- job_name: 'batch-job-exporter'
+  metrics_path: /metrics
+  params:
+    module: [http_2xx]
+  static_configs:
+    - targets:
+      - prom-pushgateway-release-prometheus-pushgateway.monitoring.svc.cluster.local:9091
