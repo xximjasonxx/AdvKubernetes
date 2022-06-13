@@ -1,27 +1,25 @@
-﻿using System;
-using System.Net;
 using Newtonsoft.Json.Linq;
-using StockDataWorker.Models;
+using StockDataApi.Models;
 
-namespace StockDataWorker.Services
+namespace StockDataApi.Services
 {
-	public class PolygonStockDataQueryService : IStockDataQueryService
-	{
+    public class PolygonStockDataService : IStockDataService
+    {
         private readonly IConfiguration _configuration;
 
-		public PolygonStockDataQueryService(IConfiguration configuration)
-		{
+        public PolygonStockDataService(IConfiguration configuration)
+        {
             _configuration = configuration;
-		}
+        }
 
-        public async Task<IList<StockTicker>> GetTickerData()
+        public async Task<StockTickerViewModel?> GetStockTicker(string symbol)
         {
             using (var client = new HttpClient())
             {
                 client.BaseAddress = new Uri(_configuration["ApiBaseUrl"]);
                 var apiKey = _configuration["ApiKey"];
 
-                var urlPart = $"v3/reference/tickers?active=true&sort=ticker&order=asc&limit=50&apiKey={apiKey}";
+                var urlPart = $"v3/reference/tickers?active=true&ticker={symbol.ToUpper()}&apiKey={apiKey}";
                 var response = await client.GetAsync(urlPart);
                 if (response.IsSuccessStatusCode == false)
                 {
@@ -34,19 +32,16 @@ namespace StockDataWorker.Services
                     throw new InvalidOperationException("Get Data Request returned no data");
                 }
 
-                var responseJsonObject = JObject.Parse(responseContent);
-                var resultsEnumerable = responseJsonObject["results"].AsEnumerable();
-
-                return resultsEnumerable
-                    .Select(o => o.ToObject<StockTicker>())
-                    .ToList();
+                return JObject.Parse(responseContent)["results"]?
+                    .AsEnumerable()
+                    .Select(o => o.ToObject<StockTickerViewModel>())
+                    .FirstOrDefault();
             }
         }
     }
 
-	public interface IStockDataQueryService
+    public interface IStockDataService
     {
-		Task<IList<StockTicker>> GetTickerData();
+        Task<StockTickerViewModel?> GetStockTicker(string symbol);
     }
 }
-
