@@ -20,6 +20,7 @@ namespace StockDataApi.Services
                 var apiKey = _configuration["ApiKey"];
 
                 var urlPart = $"v3/reference/tickers?active=true&ticker={symbol.ToUpper()}&apiKey={apiKey}";
+                Console.WriteLine($"urlPart: {urlPart}");
                 var response = await client.GetAsync(urlPart);
                 if (response.IsSuccessStatusCode == false)
                 {

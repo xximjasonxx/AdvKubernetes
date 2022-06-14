@@ -1,0 +1,54 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: stock-data-api-deployment
+  namespace: stockapp
+  labels:
+    app: stockapp
+
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: stockapp-dataapi
+  template:
+    metadata:
+      labels:
+        app: stockapp-dataapi
+    spec:
+      containers:
+        - name: main
+          image: xximjasonxx/stock-data-api:v1
+          imagePullPolicy: Always
+          env:
+            - name: ApiBaseUrl
+              value: https://api.polygon.io
+            - name: ApiKey
+              valueFrom:
+                secretKeyRef:
+                  name: sec-apikey
+                  key: apikey
+          ports:
+            - containerPort: 80
+          resources:
+            limits:
+              cpu: 100m
+              memory: 100Mi
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: stock-data-api-service
+  namespace: stockapp
+  labels:
+    app: stockapp
+
+spec:
+  type: ClusterIP
+  ports:
+    - port: 80
+      targetPort: 80
+  selector:
+    app: stockapp-dataapi

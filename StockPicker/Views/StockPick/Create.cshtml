@@ -1,5 +1,16 @@
-@model StockPickIndexViewModel
+@model StockPickCreateViewModel
 
 @{
     ViewData["Title"] = "Create Stock Pick";
 }
+
+<div>
+  <h1 class="display-4">Create Stock Pick</h1>
+  <hr />
+  <form method="post" asp-action="Create">
+    <label asp-for="SymbolToTrack"></label>
+    <input asp-for="SymbolToTrack" /><br />
+    <span asp-validation-for="SymbolToTrack"></span><br />
+    <input type="submit" value="Create" class="btn btn-primary" />
+  </form>
+</div>

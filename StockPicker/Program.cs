@@ -4,6 +4,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddTransient<IReadPickListService, RedisStockPickListService>();
+builder.Services.AddTransient<StockDataApiService>();
 builder.Services.AddControllersWithViews();
 
 var app = builder.Build();
