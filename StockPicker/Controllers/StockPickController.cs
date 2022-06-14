@@ -1,5 +1,6 @@
 ﻿
 using Microsoft.AspNetCore.Mvc;
+using StockPicker.Common.Ex;
 using StockPicker.Models;
 using StockPicker.Services;
 
@@ -9,13 +10,15 @@ public class StockPickController : Controller
 {
     private readonly ILogger<StockPickController> _logger;
     private readonly IReadPickListService _readPickListService;
+    private readonly IWritePickService _writePickService;
     private readonly StockDataApiService _stockDataApiService;
 
     public StockPickController(ILogger<StockPickController> logger, IReadPickListService readPickListService,
-        StockDataApiService stockDataApiService)
+        IWritePickService writePickService, StockDataApiService stockDataApiService)
     {
         _logger = logger;
         _readPickListService = readPickListService;
+        _writePickService = writePickService;
         _stockDataApiService = stockDataApiService;
     }
 
@@ -30,6 +33,13 @@ public class StockPickController : Controller
     public IActionResult Create()
     {
         return View();
+    }
+
+    [HttpGet("{symbol}")]
+    public async Task<IActionResult> Delete(string symbol)
+    {
+        await _writePickService.DeletePick(symbol);
+        return RedirectToAction("Index");
     }
 
     [HttpPost]
@@ -48,6 +58,15 @@ public class StockPickController : Controller
             return View(viewModel);
         }
 
-        return RedirectToAction("Index");
+        try
+        {
+            await _writePickService.AddPick(viewModel.SymbolToTrack);
+            return RedirectToAction("Index");
+        }
+        catch (DuplicateSymbolPickException ex)
+        {
+            ModelState.AddModelError("SymbolToTrack", ex.Message);
+            return View(viewModel);
+        }
     }
 }
