@@ -3,3 +3,7 @@ data_api:
   apiKey: ""
   replicas: 2
   imageTag: ""
+
+pickerweb:
+  replicas: 2
+  imageTag: ""

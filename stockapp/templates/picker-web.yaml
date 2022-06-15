@@ -1,0 +1,56 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: stock-picker-web-deployment
+  namespace: stockapp
+  labels:
+    app: stockapp
+
+spec:
+  replicas: {{ .Values.pickerweb.replicas }}
+  selector:
+    matchLabels:
+      app: stockapp-pickerweb
+  template:
+    metadata:
+      labels:
+        app: stockapp-pickerweb
+    spec:
+      containers:
+        - name: main
+          image: xximjasonxx/stock-picker-web:{{ .Values.pickerweb.imageTag }}
+          imagePullPolicy: Always
+          env:
+            - name: RedisServerHostname
+              value: {{ .Release.Name }}-picker-redis-master.{{ .Release.Namespace }}.svc.cluster.local
+            - name: RedisPassword
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Release.Name }}-picker-redis
+                  key: redis-password
+            - name: StockDataApiUrl
+              value: http://stock-data-api-service.{{ .Release.Namespace }}.svc.cluster.local
+          ports:
+            - containerPort: 80
+          resources:
+            limits:
+              cpu: 100m
+              memory: 100Mi
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: stock-picker-web-service
+  namespace: stockapp
+  labels:
+    app: stockapp
+
+spec:
+  type: ClusterIP
+  ports:
+    - port: 80
+      targetPort: 80
+  selector:
+    app: stockapp-pickerweb

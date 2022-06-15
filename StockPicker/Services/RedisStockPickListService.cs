@@ -11,7 +11,12 @@ namespace StockPicker.Services
 
         IDatabase RedisDatabase
         {
-            get => ConnectionMultiplexer.Connect(_configuration["RedisServerHostname"]).GetDatabase();
+            get => ConnectionMultiplexer.Connect(
+                _configuration["RedisServerHostname"],
+                configure =>
+                {
+                    configure.Password = _configuration["RedisPassword"];
+                }).GetDatabase();
         }
 
         public RedisStockPickListService(IConfiguration configuration)
@@ -33,7 +38,7 @@ namespace StockPicker.Services
                 throw new DuplicateSymbolPickException(symbol);
             }
 
-            await RedisDatabase.ListRightPushAsync(StockPicksRedisKey, symbol);
+            await RedisDatabase.ListRightPushAsync(StockPicksRedisKey, symbol.ToUpper());
         }
 
         public async Task DeletePick(string symbol)
