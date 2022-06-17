@@ -14,7 +14,7 @@ namespace StockPriceGenerator.Services
 		public decimal GeneratePrice()
         {
 			var random = new Random();
-			var resultRaw = random.NextDouble() * 100;
+			var resultRaw = random.NextDouble() * 10;
 
 			// convert to a decimal
 			return (decimal)Math.Round(resultRaw, 2);

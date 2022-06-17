@@ -1,3 +1,5 @@
+kafka:
+  hostname: ""
 
 data_api:
   apiKey: ""
@@ -6,4 +8,7 @@ data_api:
 
 pickerweb:
   replicas: 2
+  imageTag: ""
+
+priceupdater:
   imageTag: ""

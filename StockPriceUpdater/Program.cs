@@ -2,7 +2,8 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using StockPriceUpdater;
+using StockPriceUpdater.Models;
+using StockPriceUpdater.Models.Services;
 
 var host = Host.CreateDefaultBuilder(args)
     .ConfigureAppConfiguration(configuration =>
@@ -15,9 +16,10 @@ var host = Host.CreateDefaultBuilder(args)
     .ConfigureServices((hostContext, services) =>
     {
         services.AddTransient<IConsumerClient, KafkaConsumeClient>();
+        services.AddTransient<IStockPriceWriteService, RedisStockPriceService>();
+        services.AddTransient<IStockPriceReadService, RedisStockPriceService>();
         //services.AddTransient<IProducerClient, KafkaProducerClient>();
-        //services.AddTransient<StockPriceChangeCalculationService>();
-
+        
         services.AddHostedService<ApplicationHostedService>();
     });
 

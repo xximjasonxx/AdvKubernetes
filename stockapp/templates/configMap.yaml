@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: stockapp-config
+
+data:
+  kafkaHost: {{ .Values.kafka.hostname }}
+  dataApiUrl: http://stock-data-api-service.{{ .Release.Namespace }}.svc.cluster.local
+  pickerRedisHost: {{ .Release.Name }}-picker-redis-master.{{ .Release.Namespace }}.svc.cluster.local
+  pricedataredisHost: {{ .Release.Name }}-price-data-redis-master.{{ .Release.Namespace }}.svc.cluster.local

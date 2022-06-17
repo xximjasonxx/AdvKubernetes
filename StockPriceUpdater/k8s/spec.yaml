@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: price-updater-deployment
+
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: price-updater
+
+  template:
+    metadata:
+      name: price-updater
+      labels:
+        app: price-updater
+
+    spec:
+      containers:
+        - name: main
+          image: xximjasonxx/stock-price-updater:v1
+          env:
+            - name: KafkaHost
+              value: localhost
+            - name: KafkaTopic
+              value: stock-price-updater
+            - name: ConsumerGroup
+              value: price-updates-consumer-group
+            - name: RedisServerHostname
+              value: localhost
+            - name: RedisPassword
+              value: ""

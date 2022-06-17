@@ -1,0 +1,41 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: price-updater-deployment
+
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: price-updater
+
+  template:
+    metadata:
+      name: price-updater
+      labels:
+        app: price-updater
+
+    spec:
+      containers:
+        - name: main
+          image: xximjasonxx/stock-price-updater:{{ .Values.priceupdate.imageTag }}
+          env:
+            - name: KafkaHost
+              valueFrom:
+                configMapKeyRef:
+                  name: stockapp-config
+                  key: kafkaHost
+            - name: KafkaTopic
+              value: stock-price-updater
+            - name: ConsumerGroup
+              value: price-updates-consumer-group
+            - name: RedisServerHostname
+              valueFrom:
+                configMapKeyRef:
+                  name: stockapp-config
+                  key: pricedataredisHost
+            - name: RedisPassword
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Release.Name }}-price-data-redis
+                  key: redis-password
