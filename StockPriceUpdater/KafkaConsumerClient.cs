@@ -2,7 +2,7 @@ using Confluent.Kafka;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 
-namespace StockPriceUpdater.Models
+namespace StockPriceUpdater
 {
     public class KafkaConsumeClient : IConsumerClient
     {

@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
@@ -8,16 +9,21 @@ namespace StockPriceUpdater.Models
     public class ApplicationHostedService : IHostedService
     {
         private readonly IConsumerClient _consumerClient;
+        private readonly IProducerClient _producerClient;
         private readonly IStockPriceWriteService _stockPriceWriteService;
         private readonly IStockPriceReadService _stockPriceReadService;
+        private readonly IConfiguration _configuration;
         private readonly ILogger<ApplicationHostedService> _logger;
 
         public ApplicationHostedService(IConsumerClient consumerClient, ILogger<ApplicationHostedService> logger,
-            IStockPriceWriteService stockPriceWriteService, IStockPriceReadService stockPriceReadService)
+            IStockPriceWriteService stockPriceWriteService, IStockPriceReadService stockPriceReadService,
+            IProducerClient producerClient, IConfiguration configuration)
         {
             _consumerClient = consumerClient;
+            _producerClient = producerClient;
             _stockPriceWriteService = stockPriceWriteService;
             _stockPriceReadService = stockPriceReadService;
+            _configuration = configuration;
             _logger = logger;
 
             _consumerClient.MessageReceived += OnMessageReceived;
@@ -46,9 +52,14 @@ namespace StockPriceUpdater.Models
             if (oldStock != null)
             {
                 // calculate the change
-                var percentChange = Math.Round((stockUpdate.Price - oldStock.Price) / oldStock.Price, 2);
+                var percentChange = Math.Round((stockUpdate.Price - oldStock.Price) / oldStock.Price, 4);
 
-                _logger.LogInformation("Stock price change for {Ticker}: {PercentChange}%", stockUpdate.Ticker, percentChange*100);
+                _logger.LogInformation("Sending price change for {Ticker}: {PercentChange}%", stockUpdate.Ticker, percentChange*100);
+                await _producerClient.Send(new StockPriceChange
+                {
+                    Ticker = stockUpdate.Ticker,
+                    PercentChange = percentChange
+                }, _configuration["PriceChangeTopic"]);
             }
         }
 

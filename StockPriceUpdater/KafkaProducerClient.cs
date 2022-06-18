@@ -2,7 +2,7 @@ using Confluent.Kafka;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 
-namespace StockPriceGenerator
+namespace StockPriceUpdater
 {
 	public class KafkaProducerClient : IProducerClient
 	{
