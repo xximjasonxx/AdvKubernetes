@@ -54,12 +54,14 @@ namespace StockPriceUpdater.Models
 
         public Task StartAsync(CancellationToken cancellationToken)
         {
+            _logger.LogInformation("Starting application hosted service");
             _consumerClient.StartConsuming(cancellationToken);
             return Task.CompletedTask;
         }
 
         public Task StopAsync(CancellationToken cancellationToken)
         {
+            _logger.LogInformation("Stopping application hosted service");
             return Task.CompletedTask;
         }
     }

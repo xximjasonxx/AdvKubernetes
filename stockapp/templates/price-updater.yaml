@@ -26,7 +26,7 @@ spec:
                   name: stockapp-config
                   key: kafkaHost
             - name: KafkaTopic
-              value: stock-price-updater
+              value: stock-price-updates
             - name: ConsumerGroup
               value: price-updates-consumer-group
             - name: RedisServerHostname

@@ -22,7 +22,11 @@ namespace StockPriceGenerator
 
         public async Task Execute()
         {
+            _logger.LogInformation("Application started");
+
             var tickers = await _stockPicksReadService.ReadPickedTickers();
+            _logger.LogInformation($"{tickers.Count} tickers read");
+            
             foreach (var ticker in tickers)
             {
                 var priceUpdate = new StockPriceUpdate

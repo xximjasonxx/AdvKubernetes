@@ -1,0 +1,70 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: price-generator-job-{{ .Chart.AppVersion }}-{{ .Values.pricegenerator.imageTag }}
+
+spec:
+  template:
+    spec:
+      containers:
+        - name: job-container
+          image: xximjasonxx/stock-price-generator:{{ .Values.pricegenerator.imageTag }}
+          imagePullPolicy: Always
+          env:
+            - name: RedisHostname
+              valueFrom:
+                configMapKeyRef:
+                  name: stockapp-config
+                  key: pickerRedisHost
+            - name: RedisPassword
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Release.Name }}-picker-redis
+                  key: redis-password
+            - name: KafkaHost
+              valueFrom:
+                configMapKeyRef:
+                  name: stockapp-config
+                  key: kafkaHost
+      restartPolicy: OnFailure
+
+---
+
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: price-generator-cron-job
+
+spec:
+  schedule: "*/1 * * * *"
+  successfulJobsHistoryLimit: 10
+  failedJobsHistoryLimit: 10
+  suspend: {{ eq .Values.pricegenerator.enabled false }}
+  jobTemplate:
+    spec:
+      template:
+        metadata:
+          name: price-generator-job-{{ .Chart.AppVersion }}-{{ .Values.pricegenerator.imageTag }}
+
+        spec:
+          containers:
+            - name: job-container
+              image: xximjasonxx/stock-price-generator:{{ .Values.pricegenerator.imageTag }}
+              imagePullPolicy: Always
+              env:
+                - name: RedisHostname
+                  valueFrom:
+                    configMapKeyRef:
+                      name: stockapp-config
+                      key: pickerRedisHost
+                - name: RedisPassword
+                  valueFrom:
+                    secretKeyRef:
+                      name: {{ .Release.Name }}-picker-redis
+                      key: redis-password
+                - name: KafkaHost
+                  valueFrom:
+                    configMapKeyRef:
+                      name: stockapp-config
+                      key: kafkaHost
+          restartPolicy: OnFailure
