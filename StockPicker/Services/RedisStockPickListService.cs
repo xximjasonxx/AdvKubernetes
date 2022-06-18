@@ -1,5 +1,7 @@
+using Newtonsoft.Json;
 using StackExchange.Redis;
 using StockPicker.Common.Ex;
+using StockPicker.Models;
 
 namespace StockPicker.Services
 {
@@ -24,41 +26,42 @@ namespace StockPicker.Services
             _configuration = configuration;
         }
 
-        public async Task<List<string>> GetPickList()
+        public async Task<List<StockPick>> GetPickList()
         {
             var redisValues = await RedisDatabase.ListRangeAsync(StockPicksRedisKey);
-            return redisValues.Select(x => x.ToString()).ToList();
+            return redisValues.Select(x => JsonConvert.DeserializeObject<StockPick>(x.ToString())).ToList();
         }
 
-        public async Task AddPick(string symbol)
+        public async Task AddPick(StockPick stockPick)
         {
             var redisValues = await GetPickList();
-            if (redisValues.Contains(symbol))
+            if (redisValues.Any(x => x.Ticker == stockPick.Ticker))
             {
-                throw new DuplicateSymbolPickException(symbol);
+                throw new DuplicateSymbolPickException(stockPick.Ticker);
             }
 
-            await RedisDatabase.ListRightPushAsync(StockPicksRedisKey, symbol.ToUpper());
+            await RedisDatabase.ListRightPushAsync(StockPicksRedisKey, JsonConvert.SerializeObject(stockPick));
         }
 
         public async Task DeletePick(string symbol)
         {
             var redisValues = await GetPickList();
-            if (redisValues.Contains(symbol))
+            var stockPick = redisValues.FirstOrDefault(x => x.Ticker == symbol);
+            if (stockPick != null)
             {
-                await RedisDatabase.ListRemoveAsync(StockPicksRedisKey, symbol);
+                await RedisDatabase.ListRemoveAsync(StockPicksRedisKey, JsonConvert.SerializeObject(stockPick));
             }
         }
   }
 
     public interface IReadPickListService
     {
-        Task<List<string>> GetPickList();
+        Task<List<StockPick>> GetPickList();
     }
 
     public interface IWritePickService
     {
-        Task AddPick(string symbol);
+        Task AddPick(StockPick stockPick);
         Task DeletePick(string symbol);
     }
 }

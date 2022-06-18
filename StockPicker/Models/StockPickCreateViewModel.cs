@@ -12,6 +12,6 @@ namespace StockPicker.Models
         public bool NotifyOnAllPriceChanges { get; set; }
 
         [Display(Name = "Notify on price change percentage")]
-        public decimal PriceChangePercentThreshold { get; set; }
+        public decimal? PriceChangePercentThreshold { get; set; }
     }
 }

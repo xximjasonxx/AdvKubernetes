@@ -60,7 +60,14 @@ public class StockPickController : Controller
 
         try
         {
-            await _writePickService.AddPick(viewModel.SymbolToTrack);
+            var stockPick = new StockPick
+            {
+                Ticker = viewModel.SymbolToTrack.ToUpper(),
+                NotifyOnAll = viewModel.NotifyOnAllPriceChanges,
+                ChangeThreshold = viewModel.PriceChangePercentThreshold.HasValue ? viewModel.PriceChangePercentThreshold.Value : null
+            };
+
+            await _writePickService.AddPick(stockPick);
             return RedirectToAction("Index");
         }
         catch (DuplicateSymbolPickException ex)

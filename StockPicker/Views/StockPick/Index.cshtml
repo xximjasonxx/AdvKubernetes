@@ -15,7 +15,7 @@
     {
         @foreach (var stockPick in Model.StockPicks)
         {
-            <div><span style="font-size: 20px">@stockPick</span> - <a asp-action="Delete" asp-route-symbol="@stockPick">Delete</a></div>
+            <div><span style="font-size: 20px">@stockPick.Ticker</span> - <a asp-action="Delete" asp-route-symbol="@stockPick.Ticker">Delete</a></div>
         }
     }
     <hr />
