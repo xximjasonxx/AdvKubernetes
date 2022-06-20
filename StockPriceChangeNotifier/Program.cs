@@ -3,6 +3,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using StockPriceChangeNotifier;
+using StockPriceChangeNotifier.Services;
 
 var host = Host.CreateDefaultBuilder(args)
     .ConfigureAppConfiguration(configuration =>
@@ -15,6 +16,8 @@ var host = Host.CreateDefaultBuilder(args)
     .ConfigureServices((hostContext, services) =>
     {
         services.AddTransient<IConsumerClient, KafkaConsumeClient>();
+        services.AddTransient<IRedisClient, RedisClient>();
+        services.AddTransient<SendNotificationCheckService>();
         services.AddHostedService<ApplicationHostedService>();
     });
 
