@@ -1,0 +1,46 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: stock-data-web-deployment
+  namespace: stockapp
+  labels:
+    app: stockapp
+
+spec:
+  replicas: {{ .Values.dataweb.replicas }}
+  selector:
+    matchLabels:
+      app: stockapp-dataweb
+  template:
+    metadata:
+      labels:
+        app: stockapp-dataweb
+    spec:
+      containers:
+        - name: main
+          image: xximjasonxx/stock-data-web:{{ .Values.dataweb.imageTag }}
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 80
+          resources:
+            limits:
+              cpu: 100m
+              memory: 100Mi
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: stock-data-web-service
+  namespace: stockapp
+  labels:
+    app: stockapp
+
+spec:
+  type: ClusterIP
+  ports:
+    - port: 80
+      targetPort: 80
+  selector:
+    app: stockapp-dataweb

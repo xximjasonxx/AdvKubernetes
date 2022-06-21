@@ -18,3 +18,26 @@ spec:
                 name: stock-picker-web-service
                 port:
                   number: 80
+
+---
+
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: ing-stockdataweb
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+
+spec:
+  ingressClassName: nginx
+  rules:
+    - host: dataweb.stockapp.local
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: stock-data-web-service
+                port:
+                  number: 80

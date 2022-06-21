@@ -16,3 +16,7 @@ priceupdater:
 pricegenerator:
   imageTag: ""
   enabled: true
+
+dataweb:
+  imageTag: v1
+  replicas: 2
